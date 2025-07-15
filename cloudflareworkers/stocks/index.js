@@ -1,4 +1,5 @@
 import welcome from "welcome.html";
+import { DurableObject } from "cloudflare:workers";
 
 /**
  * @typedef {Object} Env
@@ -20,7 +21,7 @@ export default {
 			const data = await import("./data.js");
 			return Response.json(data);
 		}
-		if (url.pathname === "/quote") {
+		if (url.pathname === "/run") {
 			return await fetchAllStocks();
 		}
 		return new Response(welcome, {
@@ -91,3 +92,29 @@ async function sleep(ms) {
 	return new Promise(resolve => setTimeout(resolve, ms));
 }
 
+export class StockInformation extends DurableObject {
+	constructor(ctx, env) {
+		// Required, as we're extending the base class.
+		super(ctx, env);
+	}	
+
+	async sayHello() {
+		let result = this.ctx.storage.sql
+		  .exec("SELECT 'Hello, World!' as greeting")
+		  .one();
+		return result.greeting;
+	}
+
+	async getValue(ticker) {
+	  let value = (await this.ctx.storage.get(ticker)) || 0;
+	  return value;
+	}
+  
+	// You do not have to worry about a concurrent request having modified the value in storage.
+	// "input gates" will automatically protect against unwanted concurrency.
+	// Read-modify-write is safe.
+	async saveValue(ticker, value) {
+	  await this.ctx.storage.put(ticker, value);
+	  return value;
+	}
+  }
