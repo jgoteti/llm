@@ -39,6 +39,9 @@
 	 */
 	// MAILERSEND_API_KEY_SECRET is used instead of this
 	"vars": { "MAILERSEND_API_KEY": "" },
+	"ai": {
+  	  "binding": "AI"
+	  },
 	/**
 	 * Note: Use secrets to store sensitive data.
 	 * https://developers.cloudflare.com/workers/configuration/secrets/

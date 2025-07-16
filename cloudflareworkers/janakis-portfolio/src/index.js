@@ -42,6 +42,14 @@ export default {
 		const url = new URL(request.url);
 		console.log(`Hello ${navigator.userAgent} at path ${url.pathname}!`);
 
+		if (url.pathname == '/ai') {
+			const response = await env.AI.run("@cf/meta/llama-3.1-8b-instruct", {
+		      prompt: "What is the origin of the phrase Hello, World",
+		    });
+
+    			return new Response(JSON.stringify(response));
+		}
+
 		return await fetchAllStocks(env);
 	},
 	async scheduled(event, env, ctx) {
