@@ -17,13 +17,7 @@ const recipients = [
   new Recipient("jgoteti@gmail.com", "Your Client")
 ];
 
-const emailParams = new EmailParams()
-  .setFrom(sentFrom)
-  .setTo(recipients)
-  .setReplyTo(sentFrom)
-  .setSubject("This is a Subject")
-  .setHtml("<strong>This is the HTML content</strong>")
-  .setText("This is the text content");
+
 
 
 /**
@@ -58,7 +52,7 @@ export default {
 };
 
 async function fetchAllStocks(env) {
-	const tickers = ['ARKF'];
+	const tickers = ['ARKF', 'NET', 'DDOG'];
 	// FBGRX does not work.
 	// const tickers = ['ADYEY', 'NET', 'DDOG', 'FBGRX', 'MELI', 'ARKF', 'FSMEX', 'CRWD', 'AFRM', 'FRSH', 'DASH', 'TTD', 'HIMS']
 	/** const today = new Date();
@@ -71,18 +65,41 @@ async function fetchAllStocks(env) {
 
 	var date = yesterday.toISOString().split("T")[0];
 	*/
+	var personalization = [
+        {
+            email: "jgoteti@gmail.com",
+            data: {
+              stocks: []
+            },
+          }
+        ];
 
 	var results = [];
 	for (const ticker of tickers) {
-		// TODO: handle NOT_FOUND for holidays
 		var result = await fetchPrice(ticker);
 		results.push(result);
+		var stockinfo = new Object();
+                stockinfo.symbol = ticker;
+                stockinfo.status = `Percent change ${result.dp}`;
+                stockinfo.duration = `1 Day`;
+                personalization[0].data.stocks.push(stockinfo);
+
 		await env.STOCKS_KV.put(ticker, JSON.stringify(result));
 		await sleep(10000); // sleep for 10seconds to avoid 429
 	}
 	const mailerSend = new MailerSend({
 	  apiKey: env.MAILERSEND_API_KEY_SECRET,
 	});
+
+
+	const emailParams = new EmailParams()
+	    .setFrom(sentFrom)
+	    .setTo(recipients)
+	    .setReplyTo(sentFrom)
+	    .setSubject("Portfolio Alert")
+	    .setTemplateId('pr9084z1nkegw63d')
+	    .setPersonalization(personalization);
+
 	await mailerSend.email.send(emailParams);
 	return Response.json(results);
 }
