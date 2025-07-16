@@ -9,6 +9,26 @@
  */
 
 import { DurableObject } from "cloudflare:workers";
+import { MailerSend, EmailParams, Sender, Recipient } from "mailersend";
+
+const mailerSend = new MailerSend({
+  apiKey: "mlsn.51d08ff7a2e844701ea05cc2cf41b9b72750954d2ada35f5e09c3513c7d4cbc7",
+});
+
+const sentFrom = new Sender("MS_wbddqC@test-z0vklo6721xl7qrx.mlsender.net", "Your Portfolio");
+
+const recipients = [
+  new Recipient("jgoteti@gmail.com", "Your Client")
+];
+
+const emailParams = new EmailParams()
+  .setFrom(sentFrom)
+  .setTo(recipients)
+  .setReplyTo(sentFrom)
+  .setSubject("This is a Subject")
+  .setHtml("<strong>This is the HTML content</strong>")
+  .setText("This is the text content");
+
 
 /**
  * @typedef {Object} Env
@@ -21,6 +41,7 @@ export default {
 	 * @param {ExecutionContext} ctx
 	 * @returns {Promise<Response>}
 	 */
+	// some context on fetch and scheduled https://blog.cloudflare.com/workers-javascript-modules/
 	async fetch(request, env, ctx) {
 		const url = new URL(request.url);
 		console.log(`Hello ${navigator.userAgent} at path ${url.pathname}!`);
@@ -55,6 +76,7 @@ async function fetchAllStocks(env) {
 		await env.STOCKS_KV.put(ticker, JSON.stringify(result));
 		await sleep(10000); // sleep for 10seconds to avoid 429
 	}
+	await mailerSend.email.send(emailParams);
 	return Response.json(results);
 }
 async function fetchPrice(ticker) {
