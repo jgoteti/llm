@@ -36,8 +36,7 @@ async function fetchAllStocks() {
 	const tickers = ['ARKF'];
 	// FBGRX does not work.
 	// const tickers = ['ADYEY', 'NET', 'DDOG', 'FBGRX', 'MELI', 'ARKF', 'FSMEX', 'CRWD', 'AFRM', 'FRSH', 'DASH', 'TTD', 'HIMS']
-	var ticker = 'GOOG';
-	const today = new Date();
+	/** const today = new Date();
 	const yesterday = new Date(today);
 	if (today.getDay() == 1) { // Monday
 		yesterday.setDate(today.getDate() - 3);
@@ -46,16 +45,19 @@ async function fetchAllStocks() {
 	}
 
 	var date = yesterday.toISOString().split("T")[0];
+	*/
+
 	var results = [];
 	for (const ticker of tickers) {
 		// TODO: handle NOT_FOUND for holidays
-		results.push(await fetchPrice(ticker, date));
+		results.push(await fetchPrice(ticker));
 		await sleep(10000); // sleep for 10seconds to avoid 429
 	}
 	return Response.json(results);
 }
-async function fetchPrice(ticker, date) {
-	var stockurl = `https://api.polygon.io/v1/open-close/${ticker}/${date}?adjusted=true&apiKey=4oF5iKiOq2RPMp_IMEFdOp9kz02lsw7D`;
+async function fetchPrice(ticker) {
+	// var stockurl = `https://api.polygon.io/v1/open-close/${ticker}/${date}?adjusted=true&apiKey=4oF5iKiOq2RPMp_IMEFdOp9kz02lsw7D`;
+	var stockurl = `https://finnhub.io/api/v1/quote?symbol=${ticker}&token=d1qrpphr01qo4qd92rugd1qrpphr01qo4qd92rv0`;
 	const init = {
 		headers: {
 		  "content-type": "application/json;charset=UTF-8",
