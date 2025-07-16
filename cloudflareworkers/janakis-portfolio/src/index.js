@@ -25,14 +25,14 @@ export default {
 		const url = new URL(request.url);
 		console.log(`Hello ${navigator.userAgent} at path ${url.pathname}!`);
 
-		return await fetchAllStocks();
+		return await fetchAllStocks(env);
 	},
 	async scheduled(event, env, ctx) {
-		var prices = await fetchAllStocks();
+		var prices = await fetchAllStocks(env);
 	},
 };
 
-async function fetchAllStocks() {
+async function fetchAllStocks(env) {
 	const tickers = ['ARKF'];
 	// FBGRX does not work.
 	// const tickers = ['ADYEY', 'NET', 'DDOG', 'FBGRX', 'MELI', 'ARKF', 'FSMEX', 'CRWD', 'AFRM', 'FRSH', 'DASH', 'TTD', 'HIMS']
@@ -50,7 +50,9 @@ async function fetchAllStocks() {
 	var results = [];
 	for (const ticker of tickers) {
 		// TODO: handle NOT_FOUND for holidays
-		results.push(await fetchPrice(ticker));
+		var result = await fetchPrice(ticker);
+		results.push(result);
+		await env.STOCKS_KV.put(ticker, JSON.stringify(result));
 		await sleep(10000); // sleep for 10seconds to avoid 429
 	}
 	return Response.json(results);
