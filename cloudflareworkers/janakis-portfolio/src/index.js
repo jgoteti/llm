@@ -25,9 +25,7 @@ export default {
 		const url = new URL(request.url);
 		console.log(`Hello ${navigator.userAgent} at path ${url.pathname}!`);
 
-		if (url.pathname === "/run") {
-			return await fetchAllStocks();
-		}
+		return await fetchAllStocks();
 	},
 	async scheduled(event, env, ctx) {
 		var prices = await fetchAllStocks();
