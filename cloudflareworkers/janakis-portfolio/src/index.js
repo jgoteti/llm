@@ -73,7 +73,7 @@ async function fetchAllStocks(env) {
 		await sleep(10000); // sleep for 10seconds to avoid 429
 	}
 	const mailerSend = new MailerSend({
-	  apiKey: env.MAILERSEND_API_KEY,
+	  apiKey: env.MAILERSEND_API_KEY_SECRET,
 	});
 	await mailerSend.email.send(emailParams);
 	return Response.json(results);

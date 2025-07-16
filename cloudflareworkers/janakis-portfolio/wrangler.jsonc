@@ -37,7 +37,8 @@
 	 * Environment Variables
 	 * https://developers.cloudflare.com/workers/wrangler/configuration/#environment-variables
 	 */
-	"vars": { "MAILERSEND_API_KEY": "mlsn.79548750681a075cb4443e78611877d9ff0e5aac080bcc8fd5301545da2b552c" },
+	// MAILERSEND_API_KEY_SECRET is used instead of this
+	"vars": { "MAILERSEND_API_KEY": "" },
 	/**
 	 * Note: Use secrets to store sensitive data.
 	 * https://developers.cloudflare.com/workers/configuration/secrets/
