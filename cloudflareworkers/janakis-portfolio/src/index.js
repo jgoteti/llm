@@ -11,10 +11,6 @@
 import { DurableObject } from "cloudflare:workers";
 import { MailerSend, EmailParams, Sender, Recipient } from "mailersend";
 
-const mailerSend = new MailerSend({
-  apiKey: "mlsn.51d08ff7a2e844701ea05cc2cf41b9b72750954d2ada35f5e09c3513c7d4cbc7",
-});
-
 const sentFrom = new Sender("MS_wbddqC@test-z0vklo6721xl7qrx.mlsender.net", "Your Portfolio");
 
 const recipients = [
@@ -76,6 +72,9 @@ async function fetchAllStocks(env) {
 		await env.STOCKS_KV.put(ticker, JSON.stringify(result));
 		await sleep(10000); // sleep for 10seconds to avoid 429
 	}
+	const mailerSend = new MailerSend({
+	  apiKey: env.MAILERSEND_API_KEY,
+	});
 	await mailerSend.email.send(emailParams);
 	return Response.json(results);
 }
